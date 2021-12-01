@@ -3,9 +3,6 @@ import Card from "./components/Card"
 import axios from 'axios'
 
 export default function Home() {
-    const [unvotedPlayerList, setUnvoted] = useState([])
-    const [RPODList, setRPODList] = useState([])
-    const [currentPlayer, setCurrentPlayer] = useState(null)
 
     const [state, setState] = useState({
         RPODList: [],
@@ -14,12 +11,12 @@ export default function Home() {
     })
 
     function getRPODs() {
-        return fetch('http://localhost:3001/rpods', {method: "GET", mode: "cors", headers: {'Content-Type':  'application/json'}})
+        return fetch('https://rpod-backend.herokuapp.com/rpods', {method: "GET", mode: "cors", headers: {'Content-Type':  'application/json'}})
           .then(data => data.json())
     }
 
     function getUnvoted() {
-        return fetch('http://localhost:3001/playersNotVotedOn', {method: "GET", mode: "cors", headers: {'Content-Type':  'application/json'}})
+        return fetch('https://rpod-backend.herokuapp.com/playersNotVotedOn', {method: "GET", mode: "cors", headers: {'Content-Type':  'application/json'}})
             .then(data => data.json())
     }
 
@@ -32,34 +29,10 @@ export default function Home() {
         if (vote) {
             updatedRPODList.push(state.currentPlayer)
         }
-        axios.patch("http://localhost:3001/players", {id: state.currentPlayer._id, isRPOD: vote })
+        axios.patch("https://rpod-backend.herokuapp.com/players", {id: state.currentPlayer._id, isRPOD: vote})
             .then(_ => setState(prevState => 
                 ({currentPlayer: updatedCurrentPlayer, RPODList: updatedRPODList, unvotedPlayerList: updatedUnvotedList})))
     }
-
-    // useEffect(() => {
-    //     let mounted = true;
-    //     getUnvoted()
-    //         .then(items => {
-    //             if(mounted) {
-    //                 setUnvoted(items)
-    //                 setCurrentPlayer(items[0])
-    //             }
-    //     })
-    //     return () => mounted = false;
-    // }, [])
-
-    // useEffect(() => {
-    //     let mounted = true;
-    //     getRPODs()
-    //         .then(items => {
-    //             if(mounted) {
-    //                 setRPODList(items)
-    //             }
-    //     })
-    //     return () => mounted = false;
-    // }, [])
-
 
     useEffect(() => {
         let mounted = true;
@@ -89,11 +62,14 @@ export default function Home() {
         <div className="container">
             <h1>RPOD Tracker</h1>
             <div className="main-container">
-                <div className="unvoted-list">
+                <div className="unvoted-list-container">
                     <h4>Unvoted Players</h4>
-                    {state.unvotedPlayerList.map(p =>
-                        <p>{p.name}</p>
-                    )}
+                    <div className="unvoted-list">
+                        {state.unvotedPlayerList.map(p =>
+                            <p>{p.name}</p>
+                        )}
+                    </div>
+                    
                 </div>
 
                 <Card player={state.currentPlayer} voteHandler={voteRPOD}/>
