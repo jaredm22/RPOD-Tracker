@@ -29,11 +29,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 app.use(cors())
 
-
-app.listen(3001, function() {
-    console.log('listening on 3001')
-})
-
 // Get all players
 app.get("/players", async (req, res) => {
 	const players = await Player.find();
@@ -80,4 +75,9 @@ app.patch("/players", async (req, res) => {
 		res.status(404)
 		res.send({ error: "player doesn't exist!" })
 	}
+})
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Our app is running on port ${ PORT }`);
 })
