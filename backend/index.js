@@ -7,6 +7,12 @@ const app = express();
 
 const url = "mongodb+srv://jaredm22:jjluke77@cluster0.txzog.mongodb.net/mlbplayers?retryWrites=true&w=majority";
 
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
 
 mongoose.connect(url, { useNewUrlParser: true });
 const db = mongoose.connection
