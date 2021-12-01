@@ -11,12 +11,12 @@ export default function Home() {
     })
 
     function getRPODs() {
-        return fetch('https://rpod-backend.herokuapp.com/rpods', {method: "GET", mode: "cors", headers: {'Content-Type':  'application/json'}})
+        return fetch('https://rpod-backend.herokuapp.com/rpods', {method: "GET"})
           .then(data => data.json())
     }
 
     function getUnvoted() {
-        return fetch('https://rpod-backend.herokuapp.com/playersNotVotedOn', {method: "GET", mode: "cors", headers: {'Content-Type':  'application/json'}})
+        return fetch('https://rpod-backend.herokuapp.com/playersNotVotedOn', {method: "GET"})
             .then(data => data.json())
     }
 
