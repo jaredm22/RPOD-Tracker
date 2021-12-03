@@ -4,8 +4,9 @@ import axios from 'axios'
 
 export default function Home() {
 
-    let base_url = 'http://localhost:4000/'
-    let heroku_base_url = 'https://rpod-backend.herokuapp.com/'
+    let testing = false
+
+    let base_url = testing ? 'http://localhost:4000/' : 'https://rpod-backend.herokuapp.com/'
 
     const [state, setState] = useState({
         RPODList: [],
@@ -14,10 +15,11 @@ export default function Home() {
     })
 
     const [currentTab, setCurrentTab] = useState("qb")
+    const [voter, setVoter] = useState("")
 
 
-    async function getRPODs(position) {
-        return await fetch(base_url + "nfl/rpods/" + position, {method: "GET"})
+    function getRPODs(position) {
+        return fetch(base_url + "nfl/rpods/" + position, {method: "GET"})
           .then(data => data.json())
     }
 
@@ -79,10 +81,11 @@ export default function Home() {
                 <button onClick={switchTab}>wr</button>
                 <button onClick={switchTab}>te</button>
             </div>
+
+            <input className="voter-name" value={voter} onChange={e => setVoter(e.target.value)} placeholder="Voter Name"></input>
             
             <div className="main-container">
                 <NFLCard player={state.currentPlayer} voteHandler={voteRPOD}/>
-
 
                 <div className="list-container">
                     <div className="rpod-list-container">
