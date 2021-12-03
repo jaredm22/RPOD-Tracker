@@ -1,5 +1,5 @@
 const Player = require('./models/Player');
-const Runningback = require('./models/Runningback');
+const NFLPlayer = require('./models/NFLPlayer');
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -80,32 +80,92 @@ app.patch("/players", async (req, res) => {
 })
 
 
-// Runningbacks // 
+// NFLPlayers // 
 
-// Get all runningbacks
+// Get all routes
 app.get("/nfl/rb", async (req, res) => {
-	const rbs = await Runningback.find();
+	const rbs = await NFLPlayer.find({position: "RB"});
     console.log("All rbs: ", rbs);
 	res.send(rbs);
 })
 
-// Get all RPOD's
-app.get("/nfl/rb/rpods", async (req, res) => {
-	const rbs = await Runningback.find({isRPOD: true});
+app.get("/nfl/wr", async (req, res) => {
+	const wrs = await NFLPlayer.find({position: "WR"});
+    console.log("All rbs: ", wrs);
+	res.send(wrs);
+})
+
+app.get("/nfl/te", async (req, res) => {
+	const tes = await NFLPlayer.find({position: "TE"});
+    console.log("All tes: ", tes);
+	res.send(tes);
+})
+
+app.get("/nfl/qb", async (req, res) => {
+	const qbs = await NFLPlayer.find({position: "QB"});
+    console.log("All rbs: ", qbs);
+	res.send(qbs);
+})
+
+
+
+// Get all RPOD's routes
+app.get("/nfl/rpods/rb", async (req, res) => {
+	const rbs = await NFLPlayer.find({isRPOD: true, position: "RB"});
     console.log("All RPOD's: ", rbs);
 	res.send(rbs);
 })
 
-// Get all player's not yet voted on
-app.get("/nfl/rb/unvoted", async (req, res) => {
-	const rbs = await Runningback.find({votedOn: false});
-    console.log("All runningbacks yet to be voted on: ", rbs);
-	res.send(rbs);
+app.get("/nfl/rpods/wr", async (req, res) => {
+	const wrs = await NFLPlayer.find({isRPOD: true, position:"WR"});
+    console.log("All RPOD's: ", wrs);
+	res.send(wrs);
 })
 
-app.post("/nfl/rb", async (req, res) => {
+app.get("/nfl/rpods/te", async (req, res) => {
+	const tes = await NFLPlayer.find({isRPOD: true, position:"TE"});
+    console.log("All RPOD's: ", tes);
+	res.send(tes);
+})
+
+app.get("/nfl/rpods/qb", async (req, res) => {
+	const qbs = await NFLPlayer.find({isRPOD: true, position:"QB"});
+    console.log("All RPOD's: ", qbs);
+	res.send(qbs);
+})
+
+
+
+// Get all player's not yet voted on
+app.get("/nfl/unvoted/rb", async (req, res) => {
+	const players = await NFLPlayer.find({votedOn: false, position:"RB"});
+    console.log("All NFLPlayers yet to be voted on: ", players);
+	res.send(players);
+})
+
+app.get("/nfl/unvoted/wr", async (req, res) => {
+	const players = await NFLPlayer.find({votedOn: false, position:"WR"});
+    console.log("All NFLPlayers yet to be voted on: ", players);
+	res.send(players);
+})
+
+app.get("/nfl/unvoted/te", async (req, res) => {
+	const players = await NFLPlayer.find({votedOn: false, position:"TE"});
+    console.log("All NFLPlayers yet to be voted on: ", players);
+	res.send(players);
+})
+
+app.get("/nfl/unvoted/qb", async (req, res) => {
+	const players = await NFLPlayer.find({votedOn: false, position:"QB"});
+    console.log("All NFLPlayers yet to be voted on: ", players);
+	res.send(players);
+})
+
+
+// Insert or update
+app.post("/nfl", async (req, res) => {
     const careerStats = new Map(Object.entries(JSON.parse(req.body.careerStats)));
-	const rb = new Runningback({
+	const player = new NFLPlayer({
         name: req.body.name,
         pageURL: req.body.pageURL,
         imgURL: req.body.imgURL,
@@ -115,18 +175,18 @@ app.post("/nfl/rb", async (req, res) => {
         isRPOD: false, 
         votedOn: false
     })
-	await rb.save()
-	res.send(rb)
+	await player.save()
+	res.send(player)
 })
 
-app.patch("/nfl/rb", async (req, res) => {
+app.patch("/nfl", async (req, res) => {
 	try {
-		const rb = await Runningback.findByIdAndUpdate(req.body.id, { isRPOD: req.body.isRPOD, votedOn: true})
-		await rb.save()
-		res.send(rb)
+		const player = await NFLPlayer.findByIdAndUpdate(req.body.id, { isRPOD: req.body.isRPOD, votedOn: true})
+		await player.save()
+		res.send(player)
 	} catch {
 		res.status(404)
-		res.send({ error: "rb doesn't exist!" })
+		res.send({ error: "player doesn't exist!" })
 	}
 })
 

@@ -3,7 +3,7 @@ import requests
 import json
 
 base_URL = "https://www.pro-football-reference.com/players/"
-api_URL = "http://localhost:4000/nfl/rb"
+api_URL = "http://localhost:4000/nfl/"
 nflref_URL = "https://www.pro-football-reference.com"
 
 letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
@@ -32,19 +32,25 @@ for l in letters:
         player['yearsPlayed'] = [int(yr) for yr in playerInfo[1].split('-')]
         player['pageURL'] = p.a['href']
 
-        if player['position'] != 'RB' or player['yearsPlayed'][1] - player['yearsPlayed'][0] <= 2 or player['yearsPlayed'][0] < 2004: 
+        if player['position'] not in ['RB', 'WR', 'TE', 'QB'] or player['yearsPlayed'][1] - player['yearsPlayed'][0] <= 2 or player['yearsPlayed'][0] < 2004: 
             continue
 
         playerPage = requests.get(nflref_URL+player['pageURL'])
         soup = BeautifulSoup(playerPage.content, 'html.parser')
 
-        
-
         imgdiv = soup.find("div", {"class": "media-item"})
         if imgdiv: player['imgURL'] = imgdiv.find("img")['src']
         else: continue
 
-        careerstatssection = soup.find(id="rushing_and_receiving")
+        careerstatssection = None
+        if player['position'] == 'QB':
+            careerstatssection = soup.find(id="passing")
+        elif player['position'] == 'RB': 
+            careerstatssection = soup.find(id="rushing_and_receiving")
+        else:
+            careerstatssection = soup.find(id="receiving_and_rushing")
+
+
         if careerstatssection: careerstatssection = careerstatssection.find("tfoot").find("tr")
         else: continue
 
@@ -53,7 +59,6 @@ for l in letters:
         player['careerStats'] = json.dumps(careerstats)
 
         if (int(careerstats['g']) >= 16): 
-            # rbs.append(player)
             print(player['name'])
             print()
             post = requests.post(api_URL, player)

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import RBCard from "./components/RBCard"
+import NFLCard from "./components/NFLCard"
 import axios from 'axios'
 
 export default function Home() {
@@ -10,63 +10,78 @@ export default function Home() {
     const [state, setState] = useState({
         RPODList: [],
         unvotedPlayerList: [], 
-        currentPlayer: null
+        currentPlayer: null,
     })
 
-    function getRPODs() {
-        return fetch(heroku_base_url + 'nfl/rb/rpods', {method: "GET"})
+    const [currentTab, setCurrentTab] = useState("qb")
+
+
+    async function getRPODs(position) {
+        return await fetch(base_url + "nfl/rpods/" + position, {method: "GET"})
           .then(data => data.json())
     }
 
-    function getUnvoted() {
-        return fetch(heroku_base_url + 'nfl/rb/unvoted', {method: "GET"})
+    function getUnvoted(position) {
+        return fetch(base_url + 'nfl/unvoted/' +  position, {method: "GET"})
             .then(data => data.json())
     }
 
     function voteRPOD(vote) {
         let updatedUnvotedList = [...state.unvotedPlayerList]
         updatedUnvotedList.shift()
-        console.log(updatedUnvotedList)
         let updatedCurrentPlayer = state.unvotedPlayerList[1]
         let updatedRPODList = [...state.RPODList]
+
         if (vote) {
             updatedRPODList.push(state.currentPlayer)
         }
-        axios.patch(heroku_base_url + "nfl/rb", {id: state.currentPlayer._id, isRPOD: vote})
+        axios.patch(base_url + "nfl", {id: state.currentPlayer._id, isRPOD: vote})
             .then(_ => setState(prevState => 
                 ({currentPlayer: updatedCurrentPlayer, RPODList: updatedRPODList, unvotedPlayerList: updatedUnvotedList})))
     }
 
+    function switchTab(e) {
+        let position = e.target.innerText
+        setCurrentTab(position)
+    }
+
     useEffect(() => {
         let mounted = true;
-        getUnvoted()
+        getUnvoted(currentTab)
             .then(items => {
                 if(mounted) {
                     setState(prevState => ({...prevState, unvotedPlayerList: items, currentPlayer: items[0]}))
                 }
         })
         return () => mounted = false;
-    }, [])
+    }, [currentTab])
 
     useEffect(() => {
         let mounted = true;
-        getRPODs()
+        getRPODs(currentTab)
             .then(items => {
                 if(mounted) {
                     setState(prevState => ({...prevState, RPODList: items}))
                 }
         })
         return () => mounted = false;
-    }, [])
+    }, [currentTab])
 
     console.log(state)
+    console.log(currentTab)
 
     return (
         <div className="container">
             <h1>RPOD Tracker</h1>
+            <div className="tabs-container">
+                <button onClick={switchTab}>qb</button>
+                <button onClick={switchTab}>rb</button>
+                <button onClick={switchTab}>wr</button>
+                <button onClick={switchTab}>te</button>
+            </div>
             
             <div className="main-container">
-                <RBCard player={state.currentPlayer} voteHandler={voteRPOD}/>
+                <NFLCard player={state.currentPlayer} voteHandler={voteRPOD}/>
 
 
                 <div className="list-container">

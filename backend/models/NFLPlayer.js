@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
 
-const runningback = mongoose.Schema({
+const nflplayer = mongoose.Schema({
 	name: String,
     pageURL: String,
     imgURL: String,
@@ -14,4 +14,4 @@ const runningback = mongoose.Schema({
     votedOn: Boolean
 })
 
-module.exports = mongoose.model("Runningback", runningback)
+module.exports = mongoose.model("NFLPlayer", nflplayer)
