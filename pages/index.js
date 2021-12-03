@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react"
-import Card from "./components/Card"
+import RBCard from "./components/RBCard"
 import axios from 'axios'
 
 export default function Home() {
+
+    let base_url = 'http://localhost:4000/'
+    let heroku_base_url = 'https://rpod-backend.herokuapp.com/'
 
     const [state, setState] = useState({
         RPODList: [],
@@ -11,12 +14,12 @@ export default function Home() {
     })
 
     function getRPODs() {
-        return fetch('https://rpod-backend.herokuapp.com/rpods', {method: "GET"})
+        return fetch(base_url + 'nfl/rb/rpods', {method: "GET"})
           .then(data => data.json())
     }
 
     function getUnvoted() {
-        return fetch('https://rpod-backend.herokuapp.com/playersNotVotedOn', {method: "GET"})
+        return fetch(base_url + 'nfl/rb/unvoted', {method: "GET"})
             .then(data => data.json())
     }
 
@@ -29,7 +32,7 @@ export default function Home() {
         if (vote) {
             updatedRPODList.push(state.currentPlayer)
         }
-        axios.patch("https://rpod-backend.herokuapp.com/players", {id: state.currentPlayer._id, isRPOD: vote})
+        axios.patch(base_url + "nfl/rb", {id: state.currentPlayer._id, isRPOD: vote})
             .then(_ => setState(prevState => 
                 ({currentPlayer: updatedCurrentPlayer, RPODList: updatedRPODList, unvotedPlayerList: updatedUnvotedList})))
     }
@@ -61,7 +64,9 @@ export default function Home() {
     return (
         <div className="container">
             <h1>RPOD Tracker</h1>
+            
             <div className="main-container">
+                <RBCard player={state.currentPlayer} voteHandler={voteRPOD}/>
                 <div className="unvoted-list-container">
                     <h4>Unvoted Players</h4>
                     <div className="unvoted-list">
@@ -69,10 +74,7 @@ export default function Home() {
                             <p>{p.name}</p>
                         )}
                     </div>
-                    
                 </div>
-
-                <Card player={state.currentPlayer} voteHandler={voteRPOD}/>
 
                 <div className="rpod-list-container">
                     <h4>Random Players of the Day</h4>

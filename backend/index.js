@@ -1,11 +1,13 @@
 const Player = require('./models/Player');
+const Runningback = require('./models/Runningback');
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors')
 
 const app = express();
 
-const url = "mongodb+srv://jaredm22:jjluke77@cluster0.txzog.mongodb.net/mlbplayers?retryWrites=true&w=majority";
+const url = "mongodb+srv://jaredm22:jjluke77@cluster0.txzog.mongodb.net/players?retryWrites=true&w=majority";
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -77,7 +79,58 @@ app.patch("/players", async (req, res) => {
 	}
 })
 
-const PORT = process.env.PORT || 3000;
+
+// Runningbacks // 
+
+// Get all runningbacks
+app.get("/nfl/rb", async (req, res) => {
+	const rbs = await Runningback.find();
+    console.log("All rbs: ", rbs);
+	res.send(rbs);
+})
+
+// Get all RPOD's
+app.get("/nfl/rb/rpods", async (req, res) => {
+	const rbs = await Runningback.find({isRPOD: true});
+    console.log("All RPOD's: ", rbs);
+	res.send(rbs);
+})
+
+// Get all player's not yet voted on
+app.get("/nfl/rb/unvoted", async (req, res) => {
+	const rbs = await Runningback.find({votedOn: false});
+    console.log("All runningbacks yet to be voted on: ", rbs);
+	res.send(rbs);
+})
+
+app.post("/nfl/rb", async (req, res) => {
+    const careerStats = new Map(Object.entries(JSON.parse(req.body.careerStats)));
+	const rb = new Runningback({
+        name: req.body.name,
+        pageURL: req.body.pageURL,
+        imgURL: req.body.imgURL,
+        yearsPlayed: req.body.yearsPlayed,
+        position: req.body.position,
+        careerStats: careerStats,
+        isRPOD: false, 
+        votedOn: false
+    })
+	await rb.save()
+	res.send(rb)
+})
+
+app.patch("/nfl/rb", async (req, res) => {
+	try {
+		const rb = await Runningback.findByIdAndUpdate(req.body.id, { isRPOD: req.body.isRPOD, votedOn: true})
+		await rb.save()
+		res.send(rb)
+	} catch {
+		res.status(404)
+		res.send({ error: "rb doesn't exist!" })
+	}
+})
+
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
     console.log(`Our app is running on port ${ PORT }`);
 })
