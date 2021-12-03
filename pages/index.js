@@ -14,12 +14,12 @@ export default function Home() {
     })
 
     function getRPODs() {
-        return fetch(base_url + 'nfl/rb/rpods', {method: "GET"})
+        return fetch(heroku_base_url + 'nfl/rb/rpods', {method: "GET"})
           .then(data => data.json())
     }
 
     function getUnvoted() {
-        return fetch(base_url + 'nfl/rb/unvoted', {method: "GET"})
+        return fetch(heroku_base_url + 'nfl/rb/unvoted', {method: "GET"})
             .then(data => data.json())
     }
 
@@ -32,7 +32,7 @@ export default function Home() {
         if (vote) {
             updatedRPODList.push(state.currentPlayer)
         }
-        axios.patch(base_url + "nfl/rb", {id: state.currentPlayer._id, isRPOD: vote})
+        axios.patch(heroku_base_url + "nfl/rb", {id: state.currentPlayer._id, isRPOD: vote})
             .then(_ => setState(prevState => 
                 ({currentPlayer: updatedCurrentPlayer, RPODList: updatedRPODList, unvotedPlayerList: updatedUnvotedList})))
     }
@@ -67,23 +67,27 @@ export default function Home() {
             
             <div className="main-container">
                 <RBCard player={state.currentPlayer} voteHandler={voteRPOD}/>
-                <div className="unvoted-list-container">
-                    <h4>Unvoted Players</h4>
-                    <div className="unvoted-list">
-                        {state.unvotedPlayerList.map(p =>
-                            <p>{p.name}</p>
-                        )}
-                    </div>
-                </div>
 
-                <div className="rpod-list-container">
-                    <h4>Random Players of the Day</h4>
-                    <div className="rpod-list">
-                        {state.RPODList.map(p =>
-                            <p>{p.name}</p>
-                        )}
+
+                <div className="list-container">
+                    <div className="rpod-list-container">
+                        <h4>Random Players of the Day</h4>
+                        <div className="rpod-list">
+                            {state.RPODList.map(p =>
+                                <p>{p.name}</p>
+                            )}
+                        </div>
                     </div>
-                </div>
+
+                    <div className="unvoted-list-container">
+                        <h4>Unvoted Players</h4>
+                        <div className="unvoted-list">
+                            {state.unvotedPlayerList.map(p =>
+                                <p>{p.name}</p>
+                            )}
+                        </div>
+                    </div>  
+                </div>          
             </div>
         </div>
     )
