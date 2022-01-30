@@ -91,8 +91,8 @@ export default function Home() {
                     <div className="rpod-list-container">
                         <h4>Random Players of the Day</h4>
                         <div className="rpod-list">
-                            {state.RPODList.map(p =>
-                                <p>{p.name}</p>
+                            {state.RPODList.map((p) =>
+                                <button key={p._id} onClick={setState}>{p.name}</button>
                             )}
                         </div>
                     </div>

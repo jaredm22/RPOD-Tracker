@@ -80,6 +80,7 @@ app.patch("/players", async (req, res) => {
 })
 
 
+
 // NFLPlayers // 
 
 // Get all routes
@@ -189,6 +190,32 @@ app.patch("/nfl", async (req, res) => {
 		res.send({ error: "player doesn't exist!" })
 	}
 })
+
+// reset all rb
+
+app.delete("/nfl/rb/res", async (req, res) => {
+    const rbs = await NFLPlayer.deleteMany({position: 'RB'})
+    console.log(rbs)
+    res.send(rbs)
+})
+
+app.get("/nfl/wr/res", async (req, res) => {
+    const wrs = await NFLPlayer.deleteMany({position: 'WR'})
+    console.log(wrs)
+    res.send(wrs)
+})
+
+app.patch("/nfl/resetPlayers", async (req, res) => {
+	try {
+		const nflplayers = await NFLPlayer.updateMany({votedOn: true}, { isRPOD: false, votedOn: false})
+		// await player.save()
+		res.send(nflplayers)
+	} catch {
+		res.status(404)
+		res.send({ error: "player doesn't exist!" })
+	}
+})
+
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

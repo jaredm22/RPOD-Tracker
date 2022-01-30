@@ -32,7 +32,7 @@ for l in letters:
         player['yearsPlayed'] = [int(yr) for yr in playerInfo[1].split('-')]
         player['pageURL'] = p.a['href']
 
-        if player['position'] not in ['RB', 'WR', 'TE', 'QB'] or player['yearsPlayed'][1] - player['yearsPlayed'][0] <= 2 or player['yearsPlayed'][0] < 2004: 
+        if player['position'] not in ['WR', 'RB', 'QB', 'TE'] or player['yearsPlayed'][1] - player['yearsPlayed'][0] <= 2 or player['yearsPlayed'][0] < 2004: 
             continue
 
         playerPage = requests.get(nflref_URL+player['pageURL'])
@@ -58,7 +58,7 @@ for l in letters:
         for s in ['year_id', 'team', 'pos', 'uniform_number']: careerstats.pop(s)
         player['careerStats'] = json.dumps(careerstats)
 
-        if (int(careerstats['g']) >= 16): 
+        if (int(careerstats['rec_yds']) >= 1800): 
             print(player['name'])
             print()
             post = requests.post(api_URL, player)
