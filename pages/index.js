@@ -92,7 +92,7 @@ export default function Home() {
                         <h4>Random Players of the Day</h4>
                         <div className="rpod-list">
                             {state.RPODList.map((p) =>
-                                <button key={p._id} onClick={setState}>{p.name}</button>
+                                <div key={p._id} onClick={setState}>{p.name}</div>
                             )}
                         </div>
                     </div>
